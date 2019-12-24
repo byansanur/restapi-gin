@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"github.com/gin-gonic/gin"
-	"../structs"
 	"../models"
+	"../structs"
+	"github.com/gin-gonic/gin"
 	"net/http"
 )
 
@@ -42,18 +42,20 @@ func CreateRekomendasi(c *gin.Context) {
 	}
 
 }
-func GetRekom(c *gin.Context){
+func GetRekom(c *gin.Context) {
 	nama := c.Query("nama")
 	alamat := c.Query("alamat")
 	foto := c.Query("foto")
 	rating := c.Query("rating")
+	lat := c.Query("lat")
+	lng := c.Query("lng")
 	id_type := c.Query("id_type")
 	offset := c.Query("offset")
 	limit := c.Query("limit")
 
 	res := structs.JsonResponse{}
 
-	res = models.GetRekomends(nama, alamat, foto, rating, id_type, offset,limit)
+	res = models.GetRekomends(nama, alamat, foto, rating, lat, lng, id_type, offset, limit)
 
 	if res.ApiStatus == 1 {
 
@@ -62,6 +64,34 @@ func GetRekom(c *gin.Context){
 		c.JSON(500, res)
 	}
 }
+
+func GetRekomFoto(c *gin.Context) {
+	foto := structs.RekomFoto{}
+	t := structs.Component{}
+
+	response := structs.JsonResponse{}
+	err := c.BindQuery(&foto)
+	if err != nil {
+		var mess string
+		if err != nil {
+			mess = mess + err.Error()
+		}
+		response.ApiMessage = "validation " + mess
+		c.JSON(http.StatusBadRequest, response)
+	} else {
+		data, errx := models.GetRekomFoto(foto)
+		response.Data = data
+		if errx != nil {
+			response.ApiMessage = t.GetMessageErr()
+			c.JSON(http.StatusBadRequest, response)
+		} else {
+			response.ApiStatus = 1
+			response.ApiMessage = t.GetMessageSucc()
+			c.JSON(http.StatusOK, response)
+		}
+	}
+}
+
 func GetRekomDetail(c *gin.Context) {
 	id := c.Query("id")
 
@@ -71,7 +101,7 @@ func GetRekomDetail(c *gin.Context) {
 		res.ApiStatus = 0
 		res.ApiMessage = "Required id"
 		res.Data = nil
-	}else {
+	} else {
 		res = models.GetRekomendsDetail(id)
 
 	}

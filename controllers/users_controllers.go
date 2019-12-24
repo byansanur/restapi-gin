@@ -3,41 +3,44 @@ package controllers
 import (
 	"../models"
 	"../structs"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
+	"strings"
 )
 
-func Createusers2(c *gin.Context){
+//func Createusers2(c *gin.Context){
+//
+//	users := structs.CreateUsers{}
+//	var t  = structs.Component{}
+//	response := structs.JsonResponse{}
+//
+//	err := c.ShouldBind(&users)
+//	if err != nil {
+//		var mess string
+//		if err != nil {
+//			mess = mess + err.Error()
+//		}
+//		response.ApiMessage = "validation " + mess
+//		c.JSON(400, response)
+//	} else {
+//		data, err_order := models.CreateUsers2(users)
+//
+//		response.Data = data
+//
+//		if err_order != nil {
+//			response.ApiMessage = t.GetMessageErr()
+//			c.JSON(400, response)
+//		} else {
+//			response.ApiStatus = 1
+//			response.ApiMessage = t.GetMessageSucc()
+//			c.JSON(http.StatusOK, response)
+//		}
+//	}
+//}
 
-	users := structs.CreateUsers{}
-	var t  = structs.Component{}
-	response := structs.JsonResponse{}
-
-	err := c.ShouldBind(&users)
-	if err != nil {
-		var mess string
-		if err != nil {
-			mess = mess + err.Error()
-		}
-		response.ApiMessage = "validation " + mess
-		c.JSON(400, response)
-	} else {
-		data, err_order := models.CreateUsers2(users)
-
-		response.Data = data
-
-		if err_order != nil {
-			response.ApiMessage = t.GetMessageErr()
-			c.JSON(400, response)
-		} else {
-			response.ApiStatus = 1
-			response.ApiMessage = t.GetMessageSucc()
-			c.JSON(http.StatusOK, response)
-		}
-	}
-}
-
-func CreateUsers(c *gin.Context){
+func CreateUsers(c *gin.Context) {
 	nama := c.PostForm("nama")
 	username := c.PostForm("username")
 	password := c.PostForm("password")
@@ -46,7 +49,7 @@ func CreateUsers(c *gin.Context){
 	no_hp := c.PostForm("no_hp")
 	no_visa := c.PostForm("no_ktp")
 	no_passpor := c.PostForm("no_passpor")
-	foto, header, _ := c.Request.FormFile("foto")
+	photo, header, _ := c.Request.FormFile("photo")
 	id_privileges := c.PostForm("id_privileges")
 
 	response := structs.JsonResponse{}
@@ -69,9 +72,15 @@ func CreateUsers(c *gin.Context){
 		response.ApiMessage = "masukan nomor hp anda"
 	} else if id_privileges == "" {
 		response.ApiMessage = "isi privileges"
+	} else {
+		strs := strings.Split(id_privileges, ",")
+		ary := make([]int, len(strs))
+		for i := range ary {
+			ary[i], _ = strconv.Atoi(strs[i])
+		}
+		fmt.Println("arry ", ary)
+		response = models.CreateUsers(nama, username, password, tgl_lahir, no_ktp, no_hp, no_visa, no_passpor, photo, header, id_privileges)
 	}
-
-	response = models.CreateUsers(nama, username, password, tgl_lahir, no_ktp, no_hp, no_visa, no_passpor, foto, header, id_privileges)
 
 	if response.ApiStatus == 1 {
 
@@ -151,6 +160,7 @@ func LoginUsers(c *gin.Context) {
 }
 
 func GetJamaah(c *gin.Context) {
+	created_at := c.Query("created_at")
 	nama := c.Query("nama")
 	username := c.Query("username")
 	limit := c.Query("limit")
@@ -164,13 +174,39 @@ func GetJamaah(c *gin.Context) {
 
 	response := structs.JsonResponse{}
 
-	response = models.GetJamaah(nama, username, tgl_lahir, no_ktp, no_hp, no_visa, no_passpor, id_privileges, offset, limit)
+	response = models.GetJamaah(created_at, nama, username, tgl_lahir, no_ktp, no_hp, no_visa, no_passpor, id_privileges, offset, limit)
 
 	if response.ApiStatus == 1 {
 
 		c.JSON(http.StatusOK, response)
 	} else {
 		c.JSON(500, response)
+	}
+}
+
+func SearchUser(c *gin.Context) {
+	search := structs.SearchUser{}
+	t := structs.Component{}
+	res := structs.JsonResponse{}
+	err := c.BindQuery(&search)
+	if err != nil {
+		var mess string
+		if err != nil {
+			mess = mess + err.Error()
+		}
+		res.ApiMessage = "validate " + mess
+		c.JSON(400, res)
+	} else {
+		data, errs := models.SearchUsers(search)
+		res.Data = data
+		if errs != nil {
+			res.ApiMessage = t.GetMessageErr()
+			c.JSON(400, res)
+		} else {
+			res.ApiStatus = 1
+			res.ApiMessage = t.GetMessageSucc()
+			c.JSON(http.StatusOK, res)
+		}
 	}
 }
 
@@ -180,7 +216,7 @@ func GetFoto(c *gin.Context) {
 	id_privileges := c.Query("id_privileges")
 
 	response := structs.JsonResponse{}
-	response = models.GetUsersFoto(id,foto,id_privileges)
+	response = models.GetUsersFoto(id, foto, id_privileges)
 
 	if response.ApiStatus == 1 {
 		c.JSON(http.StatusOK, response)
@@ -190,6 +226,7 @@ func GetFoto(c *gin.Context) {
 }
 
 func GetPetugas(c *gin.Context) {
+	created_at := c.Query("created_at")
 	nama := c.Query("nama")
 	username := c.Query("username")
 	limit := c.Query("limit")
@@ -203,7 +240,7 @@ func GetPetugas(c *gin.Context) {
 
 	response := structs.JsonResponse{}
 
-	response = models.GetPetugas(nama, username, tgl_lahir, no_ktp, no_hp, no_visa, no_passpor, id_privileges, offset, limit)
+	response = models.GetPetugas(created_at, nama, username, tgl_lahir, no_ktp, no_hp, no_visa, no_passpor, id_privileges, offset, limit)
 
 	if response.ApiStatus == 1 {
 
@@ -259,7 +296,7 @@ func GetUserDetail(c *gin.Context) {
 	}
 }
 
-func UpdateUser(c *gin.Context)  {
+func UpdateUser(c *gin.Context) {
 
 	id := c.PostForm("id")
 	nama := c.PostForm("nama")

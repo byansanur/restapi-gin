@@ -1,20 +1,19 @@
 package models
 
 import (
+	"../config_db"
 	"../structs"
 	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"mime/multipart"
 	"strconv"
 	"time"
-	"../config_db"
 )
-
 
 // fungsi unutk membuat user baru
 // parameter di inisialisasi diatas sesuai pada structnya
 
-func  CreateUsers2(users structs.CreateUsers) (structs.CreateUsers, error) {
+func CreateUsers2(users structs.CreateUsers) (structs.CreateUsers, error) {
 
 	var err error
 	var t = structs.Component{}
@@ -34,14 +33,13 @@ func  CreateUsers2(users structs.CreateUsers) (structs.CreateUsers, error) {
 
 func CreateUsers(nama string, username string, password string,
 	tgl_lahir string, no_ktp string, no_hp string, no_visa string,
-	no_passpor string, files multipart.File,
-	header *multipart.FileHeader, id_privileges string) structs.JsonResponse  {
+	no_passpor string, files multipart.File, header *multipart.FileHeader, id_privileges string) structs.JsonResponse {
 
 	// pembuatan variable dengan mengarahkan ke struct yang dibuat
 	var (
-		users 	structs.CreateUsers
+		users   structs.CreateUsers
 		CheckId structs.CheckId
-		t 		structs.Component
+		t       structs.Component
 	)
 
 	// pemanggilan json response dengan membuat variable dan panggil struct
@@ -83,7 +81,7 @@ func CreateUsers(nama string, username string, password string,
 				users.TglLahir = tgl_lahir
 				users.NoKtp = no_ktp_conv
 				users.NoHp = no_hp_conv
-				users.NoVisa =no_visa
+				users.NoVisa = no_visa
 				users.NoPasspor = no_passpor
 				users.Foto = url
 				users.IdPrivileges = id_privileges_conv
@@ -115,14 +113,14 @@ func CreateUsers(nama string, username string, password string,
 		fmt.Println(checkx)
 	}
 	// kembalian response
-	return  response
+	return response
 }
 
 func LoginAdmin(username string, password string) structs.JsonResponse {
 
 	var (
 		userlogin structs.CekUserLogin
-		users structs.GetUserLogin
+		users     structs.GetUserLogin
 	)
 
 	response := structs.JsonResponse{}
@@ -185,7 +183,7 @@ func LoginPetugas(username string, password string) structs.JsonResponse {
 
 	var (
 		userlogin structs.CekUserLogin
-		users structs.GetUserLogin
+		users     structs.GetUserLogin
 	)
 
 	response := structs.JsonResponse{}
@@ -248,7 +246,7 @@ func LoginUsers(username string, password string) structs.JsonResponse {
 
 	var (
 		userlogin structs.CekUserLogin
-		users structs.GetUserLogin
+		users     structs.GetUserLogin
 	)
 
 	response := structs.JsonResponse{}
@@ -307,11 +305,33 @@ func LoginUsers(username string, password string) structs.JsonResponse {
 	return response
 }
 
-func GetJamaah(nama string, username string, tgl_lahir string, no_ktp string,
-	no_hp string, no_visa string, no_passpor string, id_privileges string, offset string, limit string)structs.JsonResponse {
+//func UserUploadFoto(upload structs.UploadFoto) (structs.UploadFoto, error) {
+//	data := structs.UploadFoto{}
+//	db := idb.DB.Table("users")
+//}
+
+func SearchUsers(search structs.SearchUser) ([]structs.SearchUser, error) {
+	data := []structs.SearchUser{}
+	getDb := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir," +
+		" users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
+		"users.created_at," + "privileges.role").
+		Joins("JOIN privileges ON users.id_privileges = privileges.id").
+		Where("users.id_privileges != 1")
+
+	if search.Nama != "" {
+		getDb = getDb.Where("users.nama LIKE ?", "%"+search.Nama+"%")
+	}
+
+	err := getDb.Find(&data).Error
+	fmt.Println("users is  ", data)
+	return data, err
+}
+
+func GetJamaah(created_at string, nama string, username string, tgl_lahir string, no_ktp string,
+	no_hp string, no_visa string, no_passpor string, id_privileges string, offset string, limit string) structs.JsonResponse {
 	var (
 		getUser []structs.GetUser
-		t structs.Component
+		t       structs.Component
 	)
 
 	response := structs.JsonResponse{}
@@ -327,6 +347,9 @@ func GetJamaah(nama string, username string, tgl_lahir string, no_ktp string,
 	}
 	if offset != "" {
 		err = err.Offset(offset)
+	}
+	if created_at != "" {
+		err = err.Where("users.created_at LIKE ?", "%"+created_at+"%")
 	}
 	if nama != "" {
 		err = err.Where("users.nama = ?", nama)
@@ -358,7 +381,7 @@ func GetJamaah(nama string, username string, tgl_lahir string, no_ktp string,
 	err = err.Find(&getUser)
 	errx := err.Error
 
-	if errx != nil{
+	if errx != nil {
 		response.ApiStatus = 0
 		response.ApiMessage = errx.Error()
 		response.Data = nil
@@ -373,7 +396,7 @@ func GetJamaah(nama string, username string, tgl_lahir string, no_ktp string,
 func GetUsersFoto(id string, foto string, id_privileges string) structs.JsonResponse {
 	var (
 		getfoto []structs.GetFoto
-		t structs.Component
+		t       structs.Component
 	)
 
 	response := structs.JsonResponse{}
@@ -404,16 +427,18 @@ func GetUsersFoto(id string, foto string, id_privileges string) structs.JsonResp
 	return response
 }
 
-func GetPetugas(nama string, username string, tgl_lahir string, no_ktp string,
-	no_hp string, no_visa string, no_passpor string, id_privileges string, offset string, limit string)structs.JsonResponse {
+func GetPetugas(created_at string, nama string, username string, tgl_lahir string, no_ktp string,
+	no_hp string, no_visa string, no_passpor string, id_privileges string, offset string, limit string) structs.JsonResponse {
 	var (
 		getUser []structs.GetUser
-		t structs.Component
+		t       structs.Component
 	)
 
 	response := structs.JsonResponse{}
 
-	err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, users.created_at," + "privileges.role")
+	err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, " +
+		"users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
+		"users.created_at," + "privileges.role")
 	err = err.Joins("JOIN privileges ON users.id_privileges = privileges.id")
 	err = err.Where("users.id_privileges = 2")
 
@@ -422,6 +447,9 @@ func GetPetugas(nama string, username string, tgl_lahir string, no_ktp string,
 	}
 	if offset != "" {
 		err = err.Offset(offset)
+	}
+	if created_at != "" {
+		err = err.Where("users.created_at LIKE ?", "%"+created_at+"%")
 	}
 	if nama != "" {
 		err = err.Where("users.nama = ?", nama)
@@ -453,7 +481,7 @@ func GetPetugas(nama string, username string, tgl_lahir string, no_ktp string,
 	err = err.Find(&getUser)
 	errx := err.Error
 
-	if errx != nil{
+	if errx != nil {
 		response.ApiStatus = 0
 		response.ApiMessage = errx.Error()
 		response.Data = nil
@@ -466,10 +494,10 @@ func GetPetugas(nama string, username string, tgl_lahir string, no_ktp string,
 }
 
 func GetUsers(nama string, username string, tgl_lahir string, no_ktp string,
-	no_hp string, no_visa string, no_passpor string, id_privileges string, offset string, limit string)structs.JsonResponse {
+	no_hp string, no_visa string, no_passpor string, id_privileges string, offset string, limit string) structs.JsonResponse {
 	var (
 		getUser []structs.GetUser
-		t structs.Component
+		t       structs.Component
 	)
 
 	response := structs.JsonResponse{}
@@ -513,7 +541,7 @@ func GetUsers(nama string, username string, tgl_lahir string, no_ktp string,
 	err = err.Find(&getUser)
 	errx := err.Error
 
-	if errx != nil{
+	if errx != nil {
 		response.ApiStatus = 0
 		response.ApiMessage = errx.Error()
 		response.Data = nil
@@ -525,11 +553,11 @@ func GetUsers(nama string, username string, tgl_lahir string, no_ktp string,
 	return response
 }
 
-func GetUserDetail(id string)structs.JsonResponse {
+func GetUserDetail(id string) structs.JsonResponse {
 
 	var (
 		users structs.GetUser
-		t structs.Component
+		t     structs.Component
 	)
 
 	response := structs.JsonResponse{}
@@ -552,10 +580,10 @@ func GetUserDetail(id string)structs.JsonResponse {
 }
 
 func UpdateUser(id string, nama string, username string, password string,
-	no_hp string, no_visa string, no_passpor string, files multipart.File, header *multipart.FileHeader,) structs.JsonResponse {
+	no_hp string, no_visa string, no_passpor string, files multipart.File, header *multipart.FileHeader) structs.JsonResponse {
 	var (
 		userUpdate structs.UpdateUsers
-		t structs.Component
+		t          structs.Component
 	)
 	response := structs.JsonResponse{}
 	encryptPassword, _ := EncryptPassword(password)

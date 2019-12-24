@@ -1,19 +1,19 @@
 package models
 
 import (
+	"../structs"
 	"fmt"
 	"mime/multipart"
-	"../structs"
 	"strconv"
 )
 
 func CreateRekomendasi(nama string, alamat string, files multipart.File,
-	header *multipart.FileHeader, lat string, lng string, rating string, id_type string,)structs.JsonResponse {
+	header *multipart.FileHeader, lat string, lng string, rating string, id_type string) structs.JsonResponse {
 
 	var (
 		rekomCreate structs.CreateRekomendasi
-		cekIdRekom structs.CheckIdRekom
-		t structs.Component
+		cekIdRekom  structs.CheckIdRekom
+		t           structs.Component
 	)
 
 	response := structs.JsonResponse{}
@@ -58,7 +58,7 @@ func CreateRekomendasi(nama string, alamat string, files multipart.File,
 					response.Data = rekomCreate
 				}
 			}
-		}else {
+		} else {
 			// jika user mendaftar dengan username yang sama maka akan response disini
 			response.ApiMessage = "Nama is Already Used"
 		}
@@ -69,15 +69,17 @@ func CreateRekomendasi(nama string, alamat string, files multipart.File,
 	return response
 }
 
-func GetRekomends(nama string, alamat string, foto string, rating string, id_type string, offset string, limit string) structs.JsonResponse {
+func GetRekomends(nama string, alamat string, foto string, rating string, lat string, lng string, id_type string, offset string, limit string) structs.JsonResponse {
 	var (
 		getRekom []structs.GetRekomendasi
-		t structs.Component
+		t        structs.Component
 	)
 
 	response := structs.JsonResponse{}
 
-	err := idb.DB.Table("rekomendasi").Select("rekomendasi.id, rekomendasi.nama, rekomendasi.alamat, rekomendasi.foto, rekomendasi.rating, rekomendasi.id_type," + "typerekom.type_rekom")
+	err := idb.DB.Table("rekomendasi").Select("rekomendasi.id, rekomendasi.nama, rekomendasi.alamat, " +
+		"rekomendasi.foto, rekomendasi.rating, rekomendasi.lat, rekomendasi.lng, rekomendasi.id_type," +
+		"typerekom.type_rekom")
 	err = err.Joins("join typerekom on rekomendasi.id_type = typerekom.id")
 
 	if limit != "" {
@@ -95,6 +97,12 @@ func GetRekomends(nama string, alamat string, foto string, rating string, id_typ
 	if rating != "" {
 		err = err.Where("rekomendasi.rating = ?", rating)
 	}
+	if lat != "" {
+		err = err.Where("rekomendasi.lat")
+	}
+	if lng != "" {
+		err = err.Where("rekomendasi.lng")
+	}
 	if id_type != "" {
 		err = err.Where("rekomendasi.id_type = ?", id_type)
 	}
@@ -102,7 +110,7 @@ func GetRekomends(nama string, alamat string, foto string, rating string, id_typ
 		err = err.Where("rekomendasi.foto = ?", foto)
 	}
 
-	err = err.Order("rekomendasi.nama asc")
+	err = err.Order("rekomendasi.rating desc")
 
 	err = err.Find(&getRekom)
 	errx := err.Error
@@ -119,13 +127,32 @@ func GetRekomends(nama string, alamat string, foto string, rating string, id_typ
 	return response
 }
 
+func GetRekomFoto(foto structs.RekomFoto) ([]structs.RekomFoto, error) {
+	data := []structs.RekomFoto{}
+	getDb := idb.DB.Table("rekomendasi").Select("rekomendasi.id, rekomendasi.foto, rekomendasi.id_type")
+	if foto.Id != nil {
+		getDb = getDb.Where("rekomendasi.id in (?)", int64(*foto.Id))
+	}
+	if foto.Foto != nil {
+		getDb = getDb.Where("rekomendasi.foto in (?)", *foto.Foto)
+	}
+	if foto.IdType != nil {
+		getDb = getDb.Where("rekomendasi.id_type in (?)", int64(*foto.IdType))
+	}
+
+	err := getDb.Find(&data).Error
+	fmt.Println("foto rekomendasi", data)
+	return data, err
+}
+
 func GetRekomendsDetail(id string) structs.JsonResponse {
 	var (
 		rekom structs.GetRekomendasi
-		t structs.Component
+		t     structs.Component
 	)
 	response := structs.JsonResponse{}
-	err := idb.DB.Table("rekomendasi").Select("rekomendasi.id, rekomendasi.nama, rekomendasi.alamat, rekomendasi.foto, rekomendasi.rating, rekomendasi.id_type, rekomendasi.created_at," + "typerekom.type_rekom")
+	err := idb.DB.Table("rekomendasi").Select("rekomendasi.id, rekomendasi.nama, rekomendasi.alamat, rekomendasi.foto, " +
+		"rekomendasi.rating, rekomendasi.lat, rekomendasi.lng, rekomendasi.id_type, rekomendasi.created_at," + "typerekom.type_rekom")
 	err = err.Joins("join typerekom on rekomendasi.id_type = typerekom.id")
 	err = err.Where("rekomendasi.id = ?", id)
 	err = err.First(&rekom)
@@ -142,10 +169,10 @@ func GetRekomendsDetail(id string) structs.JsonResponse {
 	return response
 }
 
-func UpdateRekomendasi(id string, nama string, alamat string, files multipart.File, header *multipart.FileHeader, rating string)structs.JsonResponse{
+func UpdateRekomendasi(id string, nama string, alamat string, files multipart.File, header *multipart.FileHeader, rating string) structs.JsonResponse {
 	var (
 		updateRekom structs.UpdateRekomendasi
-		t structs.Component
+		t           structs.Component
 	)
 
 	response := structs.JsonResponse{}
