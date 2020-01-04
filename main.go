@@ -58,6 +58,10 @@ func main() {
 		v1.PUT("/rekom_update", controllers.UpdateRekom)
 		v1.GET("/privileges_role", controllers.GetRole)
 		v1.GET("/privileges_type", controllers.GetType)
+		v1.POST("/sos/post", controllers.CreateSos)
+		v1.GET("/sos", controllers.GetSos)
+
+		v1.GET("/get_users", controllers.GetUsersNew)
 	}
 	router.Run(":5000")
 }

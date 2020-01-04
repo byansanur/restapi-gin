@@ -66,8 +66,6 @@ func CreateUsers(nama string, username string, password string,
 		if CheckId.CountId == 0 {
 			encrptPassword, _ := EncryptPassword(password)
 			id_privileges_conv, _ := strconv.Atoi(id_privileges)
-			no_ktp_conv, _ := strconv.Atoi(no_ktp)
-			no_hp_conv, _ := strconv.Atoi(no_hp)
 
 			url := UploadImage("user", fmt.Sprint(username), files, header)
 
@@ -79,8 +77,8 @@ func CreateUsers(nama string, username string, password string,
 				users.Username = username
 				users.Password = encrptPassword
 				users.TglLahir = tgl_lahir
-				users.NoKtp = no_ktp_conv
-				users.NoHp = no_hp_conv
+				users.NoKtp = no_ktp
+				users.NoHp = no_hp
 				users.NoVisa = no_visa
 				users.NoPasspor = no_passpor
 				users.Foto = url
@@ -311,7 +309,7 @@ func LoginUsers(username string, password string) structs.JsonResponse {
 //}
 
 func SearchUsers(search structs.SearchUser) ([]structs.SearchUser, error) {
-	data := []structs.SearchUser{}
+	var data []structs.SearchUser
 	getDb := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir," +
 		" users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
 		"users.created_at," + "privileges.role").
@@ -324,6 +322,31 @@ func SearchUsers(search structs.SearchUser) ([]structs.SearchUser, error) {
 
 	err := getDb.Find(&data).Error
 	fmt.Println("users is  ", data)
+	return data, err
+}
+
+func GetUsersAll(users structs.GetUser, limit string, offset string) ([]structs.GetUser, error) {
+	var data []structs.GetUser
+	get := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir," +
+		" users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
+		"date_format(users.created_at, '%m-%d-%Y') as created_at," + "privileges.role").
+		Joins("JOIN privileges ON users.id_privileges = privileges.id").Order("users.created_at desc")
+
+	if limit != "" {
+		get = get.Limit(limit)
+	}
+	if offset != "" {
+		get = get.Offset(offset)
+	}
+	if users.IdPrivileges != nil {
+		get = get.Where("users.id_privileges in (?)", int(*users.IdPrivileges))
+	}
+	if users.Id != nil {
+		get = get.Where("users.id in (?)", int(*users.Id))
+	}
+
+	err := get.Find(&data).Error
+
 	return data, err
 }
 

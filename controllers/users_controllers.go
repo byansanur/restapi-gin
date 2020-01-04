@@ -10,35 +10,37 @@ import (
 	"strings"
 )
 
-//func Createusers2(c *gin.Context){
-//
-//	users := structs.CreateUsers{}
-//	var t  = structs.Component{}
-//	response := structs.JsonResponse{}
-//
-//	err := c.ShouldBind(&users)
-//	if err != nil {
-//		var mess string
-//		if err != nil {
-//			mess = mess + err.Error()
-//		}
-//		response.ApiMessage = "validation " + mess
-//		c.JSON(400, response)
-//	} else {
-//		data, err_order := models.CreateUsers2(users)
-//
-//		response.Data = data
-//
-//		if err_order != nil {
-//			response.ApiMessage = t.GetMessageErr()
-//			c.JSON(400, response)
-//		} else {
-//			response.ApiStatus = 1
-//			response.ApiMessage = t.GetMessageSucc()
-//			c.JSON(http.StatusOK, response)
-//		}
-//	}
-//}
+func GetUsersNew(c *gin.Context) {
+	getu := structs.GetUser{}
+	t := structs.Component{}
+
+	limit := c.Query("limit")
+	offset := c.Query("offset")
+
+	response := structs.JsonResponse{}
+
+	err := c.BindQuery(&getu)
+
+	if err != nil {
+		var m string
+		if err != nil {
+			m = m + err.Error()
+		}
+		response.ApiMessage = "validation " + m
+		c.JSON(400, response)
+	} else {
+		data, errx := models.GetUsersAll(getu, limit, offset)
+		response.Data = data
+		if errx != nil {
+			response.ApiMessage = t.GetMessageErr()
+			c.JSON(400, response)
+		} else {
+			response.ApiStatus = 1
+			response.ApiMessage = t.GetMessageSucc()
+			c.JSON(200, response)
+		}
+	}
+}
 
 func CreateUsers(c *gin.Context) {
 	nama := c.PostForm("nama")
