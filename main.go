@@ -20,25 +20,6 @@ func main() {
 		public.POST("/login_admin", controllers.LoginAdmin)
 		public.POST("/login_petugas", controllers.LoginPetugas)
 		public.POST("/login_users", controllers.LoginUsers)
-
-		//public.POST("/create_akun", controllers.CreateUsers)
-		//
-		//public.GET("/akun_list", controllers.GetUsers)
-		//public.GET("/akun_detail", controllers.GetUserDetail)
-		//public.PUT("/akun_update", controllers.UpdateUser)
-		//
-		//public.GET("/rekom_list", controllers.GetRekom)
-		//public.GET("/rekom_detail", controllers.GetRekomDetail)
-		//public.POST("/rekom_create", controllers.CreateRekomendasi)
-		//public.PUT("/rekom_update", controllers.UpdateRekom)
-		//
-		//public.GET("/privileges_role", controllers.GetRole)
-		//public.GET("/privileges_type", controllers.GetType)
-
-		//public.POST("/create_akun", controllers.CreateUsers)
-		//public.GET("/akun/list", controllers.GetUsers)
-		//public.GET("/akun/detail", controllers.GetUserDetail)
-		//public.PUT("/akun/update", controllers.UpdateUser)
 	}
 	v1 := router.Group("/api/v1")
 	//v1.Use(authentications.Auth)
@@ -59,7 +40,8 @@ func main() {
 		v1.GET("/privileges_role", controllers.GetRole)
 		v1.GET("/privileges_type", controllers.GetType)
 		v1.POST("/sos/post", controllers.CreateSos)
-		v1.GET("/sos", controllers.GetSos)
+		v1.GET("/sos/petugas", controllers.GetSosPetugas)
+		v1.GET("/sos/admin", controllers.GetSosadmin)
 
 		v1.GET("/get_users", controllers.GetUsersNew)
 	}
