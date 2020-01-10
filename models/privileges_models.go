@@ -4,14 +4,14 @@ import (
 	"../structs"
 )
 
-func GetRole()structs.JsonResponse {
+func GetRole() structs.JsonResponse {
 	var (
 		roles []structs.GetPrivileges
-		t structs.Component
+		t     structs.Component
 	)
 	response := structs.JsonResponse{}
 
-	err := idb.DB.Table("privileges")
+	err := idb.DB.Table("tb_privileges")
 
 	err = err.Find(&roles)
 	errx := err.Error
@@ -31,10 +31,10 @@ func GetRole()structs.JsonResponse {
 	return response
 }
 
-func GetType()structs.JsonResponse {
+func GetType() structs.JsonResponse {
 	var (
 		getType []structs.GetType
-		t structs.Component
+		t       structs.Component
 	)
 
 	response := structs.JsonResponse{}

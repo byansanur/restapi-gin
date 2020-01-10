@@ -128,7 +128,7 @@ func GetRekomends(nama string, alamat string, foto string, rating string, lat st
 }
 
 func GetRekomFoto(foto structs.RekomFoto) ([]structs.RekomFoto, error) {
-	data := []structs.RekomFoto{}
+	var data []structs.RekomFoto
 	getDb := idb.DB.Table("rekomendasi").Select("rekomendasi.id, rekomendasi.foto, rekomendasi.id_type")
 	if foto.Id != nil {
 		getDb = getDb.Where("rekomendasi.id in (?)", int64(*foto.Id))
@@ -152,7 +152,7 @@ func GetRekomendsDetail(id string) structs.JsonResponse {
 	)
 	response := structs.JsonResponse{}
 	err := idb.DB.Table("rekomendasi").Select("rekomendasi.id, rekomendasi.nama, rekomendasi.alamat, rekomendasi.foto, " +
-		"rekomendasi.rating, rekomendasi.lat, rekomendasi.lng, rekomendasi.id_type, rekomendasi.created_at," + "typerekom.type_rekom")
+		"rekomendasi.rating, rekomendasi.lat, rekomendasi.lng, rekomendasi.id_type, date_format(rekomendasi.created_at, '%m-%a-%Y %H:%i') as created_at," + "typerekom.type_rekom")
 	err = err.Joins("join typerekom on rekomendasi.id_type = typerekom.id")
 	err = err.Where("rekomendasi.id = ?", id)
 	err = err.First(&rekom)

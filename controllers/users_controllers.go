@@ -51,7 +51,7 @@ func CreateUsers(c *gin.Context) {
 	no_hp := c.PostForm("no_hp")
 	no_visa := c.PostForm("no_ktp")
 	no_passpor := c.PostForm("no_passpor")
-	photo, header, _ := c.Request.FormFile("photo")
+	//photo, header, _ := c.Request.FormFile("photo")
 	id_privileges := c.PostForm("id_privileges")
 
 	response := structs.JsonResponse{}
@@ -81,7 +81,7 @@ func CreateUsers(c *gin.Context) {
 			ary[i], _ = strconv.Atoi(strs[i])
 		}
 		fmt.Println("arry ", ary)
-		response = models.CreateUsers(nama, username, password, tgl_lahir, no_ktp, no_hp, no_visa, no_passpor, photo, header, id_privileges)
+		response = models.CreateUsers(nama, username, password, tgl_lahir, no_ktp, no_hp, no_visa, no_passpor, id_privileges)
 	}
 
 	if response.ApiStatus == 1 {

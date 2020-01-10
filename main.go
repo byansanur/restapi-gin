@@ -15,15 +15,16 @@ func main() {
 
 	router.Use(cors.AllowAll())
 
-	public := router.Group("/api/v1")
-	{
-		public.POST("/login_admin", controllers.LoginAdmin)
-		public.POST("/login_petugas", controllers.LoginPetugas)
-		public.POST("/login_users", controllers.LoginUsers)
-	}
+	//public := router.Group("/api/v1")
+	//{
+	//
+	//}
 	v1 := router.Group("/api/v1")
 	//v1.Use(authentications.Auth)
 	{
+		v1.POST("/login_admin", controllers.LoginAdmin)
+		v1.POST("/login_petugas", controllers.LoginPetugas)
+		v1.POST("/login_users", controllers.LoginUsers)
 		v1.POST("/create_akun", controllers.CreateUsers)
 		v1.GET("/search-users", controllers.SearchUser)
 		v1.GET("/foto", controllers.GetFoto)
@@ -41,9 +42,11 @@ func main() {
 		v1.GET("/privileges_type", controllers.GetType)
 		v1.POST("/sos/post", controllers.CreateSos)
 		v1.GET("/sos/petugas", controllers.GetSosPetugas)
+		v1.GET("/sos/petugas/detail", controllers.DetailSosPetugas)
 		v1.GET("/sos/admin", controllers.GetSosadmin)
+		v1.GET("/sos/admin/detail", controllers.DetailSosAdmin)
 
 		v1.GET("/get_users", controllers.GetUsersNew)
 	}
-	router.Run(":5000")
+	router.Run(":8080")
 }

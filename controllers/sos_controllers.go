@@ -99,7 +99,59 @@ func GetSosadmin(c *gin.Context) {
 			c.JSON(400, response)
 		} else {
 			response.ApiStatus = 1
+			response.ApiMessage = t.GetMessageSucc()
+			c.JSON(200, response)
+		}
+	}
+}
+
+func DetailSosPetugas(c *gin.Context) {
+	detailSOS := structs.DetailSosPetugas{}
+	t := structs.Component{}
+	response := structs.JsonResponse{}
+	err := c.BindQuery(&detailSOS)
+	if err != nil {
+		var a string
+		if err != nil {
+			a = a + err.Error()
+		}
+		response.ApiMessage = "validation " + a
+		c.JSON(400, response)
+	} else {
+		data, err2 := models.DetailSosPetugas(detailSOS)
+		response.Data = data
+		if err2 != nil {
 			response.ApiMessage = t.GetMessageErr()
+			c.JSON(400, response)
+		} else {
+			response.ApiStatus = 1
+			response.ApiMessage = t.GetMessageSucc()
+			c.JSON(200, response)
+		}
+	}
+}
+
+func DetailSosAdmin(c *gin.Context) {
+	sos := structs.DetailSosAdmin{}
+	t := structs.Component{}
+	response := structs.JsonResponse{}
+	err := c.BindQuery(&sos)
+	if err != nil {
+		var a string
+		if err != nil {
+			a = a + err.Error()
+		}
+		response.ApiMessage = "validation " + a
+		c.JSON(400, response)
+	} else {
+		data, err2 := models.DetailSosAdmin(sos)
+		response.Data = data
+		if err2 != nil {
+			response.ApiMessage = t.GetMessageErr()
+			c.JSON(400, response)
+		} else {
+			response.ApiStatus = 1
+			response.ApiMessage = t.GetMessageSucc()
 			c.JSON(200, response)
 		}
 	}

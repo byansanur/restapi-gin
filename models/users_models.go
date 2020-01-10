@@ -33,7 +33,7 @@ func CreateUsers2(users structs.CreateUsers) (structs.CreateUsers, error) {
 
 func CreateUsers(nama string, username string, password string,
 	tgl_lahir string, no_ktp string, no_hp string, no_visa string,
-	no_passpor string, files multipart.File, header *multipart.FileHeader, id_privileges string) structs.JsonResponse {
+	no_passpor string, id_privileges string) structs.JsonResponse {
 
 	// pembuatan variable dengan mengarahkan ke struct yang dibuat
 	var (
@@ -67,41 +67,41 @@ func CreateUsers(nama string, username string, password string,
 			encrptPassword, _ := EncryptPassword(password)
 			id_privileges_conv, _ := strconv.Atoi(id_privileges)
 
-			url := UploadImage("user", fmt.Sprint(username), files, header)
+			//url := UploadImage("user", fmt.Sprint(username), files, header)
 
-			if url != "" {
-				fmt.Println("foto ga null")
+			//if url != "" {
+			fmt.Println("foto ga null")
 
-				// pengenalan variable setiap field
-				users.Nama = nama
-				users.Username = username
-				users.Password = encrptPassword
-				users.TglLahir = tgl_lahir
-				users.NoKtp = no_ktp
-				users.NoHp = no_hp
-				users.NoVisa = no_visa
-				users.NoPasspor = no_passpor
-				users.Foto = url
-				users.IdPrivileges = id_privileges_conv
-				users.CreatedAt = t.GetTimeNow()
+			// pengenalan variable setiap field
+			users.Nama = nama
+			users.Username = username
+			users.Password = encrptPassword
+			users.TglLahir = tgl_lahir
+			users.NoKtp = no_ktp
+			users.NoHp = no_hp
+			users.NoVisa = no_visa
+			users.NoPasspor = no_passpor
+			//users.Foto = url
+			users.IdPrivileges = id_privileges_conv
+			users.CreatedAt = t.GetTimeNow()
 
-				// query untuk insert ke table users
-				err := idb.DB.Table("users").Create(&users)
+			// query untuk insert ke table users
+			err := idb.DB.Table("users").Create(&users)
 
-				// jika gagal insert ke table
-				errx := err.Error
+			// jika gagal insert ke table
+			errx := err.Error
 
-				// kondisi jika gagal buat akun
-				if errx != nil {
-					fmt.Println("gagal buat akun")
-					response.ApiMessage = t.GetMessageErr()
-				} else {
-					// jika berhasil buat akun atau insert ke db maka responsenya disini
-					response.ApiStatus = 1
-					response.ApiMessage = t.GetMessageSucc()
-					response.Data = users
-				}
+			// kondisi jika gagal buat akun
+			if errx != nil {
+				fmt.Println("gagal buat akun")
+				response.ApiMessage = t.GetMessageErr()
+			} else {
+				// jika berhasil buat akun atau insert ke db maka responsenya disini
+				response.ApiStatus = 1
+				response.ApiMessage = t.GetMessageSucc()
+				response.Data = users
 			}
+			//}
 		} else {
 			// jika user mendaftar dengan username yang sama maka akan response disini
 			response.ApiMessage = "Username Already Used"
@@ -144,8 +144,10 @@ func LoginAdmin(username string, password string) structs.JsonResponse {
 			fmt.Println("ok ada nih")
 			if cekPassword == password {
 				fmt.Println("Pass sama")
-				err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, privileges.role, users.created_at")
-				err = err.Joins("join privileges on users.id_privileges = privileges.id")
+				err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_" +
+					"lahir, users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, " +
+					"users.id_privileges, tb_privileges.role, users.created_at")
+				err = err.Joins("join tb_privileges on users.id_privileges = tb_privileges.id")
 				err = err.Where("users.id = ?", userlogin.Id)
 				err = err.Where("users.id_privileges != 2")
 				err = err.Where("users.id_privileges != 3")
@@ -207,8 +209,10 @@ func LoginPetugas(username string, password string) structs.JsonResponse {
 			fmt.Println("ok ada nih")
 			if cekPassword == password {
 				fmt.Println("Pass sama")
-				err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, privileges.role, users.created_at")
-				err = err.Joins("join privileges on users.id_privileges = privileges.id")
+				err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, " +
+					"users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
+					"tb_privileges.role, users.created_at")
+				err = err.Joins("join tb_privileges on users.id_privileges = tb_privileges.id")
 				err = err.Where("users.id = ?", userlogin.Id)
 				err = err.Where("users.id_privileges != 1")
 				err = err.Where("users.id_privileges != 3")
@@ -270,8 +274,10 @@ func LoginUsers(username string, password string) structs.JsonResponse {
 			fmt.Println("ok ada nih")
 			if cekPassword == password {
 				fmt.Println("Pass sama")
-				err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, privileges.role, users.created_at")
-				err = err.Joins("join privileges on users.id_privileges = privileges.id")
+				err := idb.DB.Table("users").Select("users.id, users.nama, users.username, " +
+					"users.tgl_lahir, users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, " +
+					"users.foto, users.id_privileges, tb_privileges.role, users.created_at")
+				err = err.Joins("join tb_privileges on users.id_privileges = tb_privileges.id")
 				err = err.Where("users.id = ?", userlogin.Id)
 				err = err.Where("users.id_privileges != 1")
 				err = err.Where("users.id_privileges != 2")
@@ -312,8 +318,8 @@ func SearchUsers(search structs.SearchUser) ([]structs.SearchUser, error) {
 	var data []structs.SearchUser
 	getDb := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir," +
 		" users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
-		"users.created_at," + "privileges.role").
-		Joins("JOIN privileges ON users.id_privileges = privileges.id").
+		"users.created_at," + "tb_privileges.role").
+		Joins("JOIN tb_privileges ON users.id_privileges = tb_privileges.id").
 		Where("users.id_privileges != 1")
 
 	if search.Nama != "" {
@@ -329,8 +335,9 @@ func GetUsersAll(users structs.GetUser, limit string, offset string) ([]structs.
 	var data []structs.GetUser
 	get := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir," +
 		" users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
-		"date_format(users.created_at, '%m-%d-%Y') as created_at," + "privileges.role").
-		Joins("JOIN privileges ON users.id_privileges = privileges.id").Order("users.created_at desc")
+		"date_format(users.created_at, '%m-%a-%Y %H:%i') as created_at," + "tb_privileges.role").
+		Joins("JOIN tb_privileges ON users.id_privileges = tb_privileges.id").
+		Order("users.created_at desc")
 
 	if limit != "" {
 		get = get.Limit(limit)
@@ -361,8 +368,8 @@ func GetJamaah(created_at string, nama string, username string, tgl_lahir string
 
 	err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir," +
 		" users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
-		"users.created_at," + "privileges.role")
-	err = err.Joins("JOIN privileges ON users.id_privileges = privileges.id")
+		"users.created_at," + "tb_privileges.role")
+	err = err.Joins("JOIN tb_privileges ON users.id_privileges = tb_privileges.id")
 	err = err.Where("users.id_privileges = 3")
 
 	if limit != "" {
@@ -423,8 +430,8 @@ func GetUsersFoto(id string, foto string, id_privileges string) structs.JsonResp
 	)
 
 	response := structs.JsonResponse{}
-	err := idb.DB.Table("users").Select("users.id, users.foto, users.id_privileges, privileges.role")
-	err = err.Joins("JOIN privileges ON users.id_privileges = privileges.id")
+	err := idb.DB.Table("users").Select("users.id, users.foto, users.id_privileges, tb_privileges.role")
+	err = err.Joins("JOIN tb_privileges ON users.id_privileges = tb_privileges.id")
 	err = err.Find(&getfoto)
 	errx := err.Error
 
@@ -461,8 +468,8 @@ func GetPetugas(created_at string, nama string, username string, tgl_lahir strin
 
 	err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, " +
 		"users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
-		"users.created_at," + "privileges.role")
-	err = err.Joins("JOIN privileges ON users.id_privileges = privileges.id")
+		"users.created_at," + "tb_privileges.role")
+	err = err.Joins("JOIN tb_privileges ON users.id_privileges = tb_privileges.id")
 	err = err.Where("users.id_privileges = 2")
 
 	if limit != "" {
@@ -525,8 +532,10 @@ func GetUsers(nama string, username string, tgl_lahir string, no_ktp string,
 
 	response := structs.JsonResponse{}
 
-	err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, users.created_at," + "privileges.role")
-	err = err.Joins("JOIN privileges ON users.id_privileges = privileges.id")
+	err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, " +
+		"users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
+		"users.created_at," + "tb_privileges.role")
+	err = err.Joins("JOIN tb_privileges ON users.id_privileges = tb_privileges.id")
 
 	if limit != "" {
 		err = err.Limit(limit)
@@ -584,8 +593,10 @@ func GetUserDetail(id string) structs.JsonResponse {
 	)
 
 	response := structs.JsonResponse{}
-	err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, users.created_at," + "privileges.role")
-	err = err.Joins("JOIN privileges ON users.id_privileges = privileges.id")
+	err := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, " +
+		"users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
+		"users.created_at," + "tb_privileges.role")
+	err = err.Joins("JOIN tb_privileges ON users.id_privileges = tb_privileges.id")
 	err = err.Where("users.id = ?", id)
 	err = err.First(&users)
 	errx := err.Error

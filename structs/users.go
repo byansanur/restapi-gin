@@ -3,16 +3,16 @@ package structs
 import "mime/multipart"
 
 type CreateUsers struct {
-	Id           int    `json:"id" form:"id"`
-	Nama         string `json:"nama" form:"nama"`
-	Username     string `json:"username" form:"username"`
-	Password     string `json:"password" form:"password"`
-	TglLahir     string `json:"tgl_lahir" form:"tgl_lahir"`
-	NoKtp        string `json:"no_ktp" form:"no_ktp" binding:"required"`
-	NoHp         string `json:"no_hp" form:"no_hp" binding:"required"`
-	NoVisa       string `json:"no_visa" form:"no_visa" binding:"required"`
-	NoPasspor    string `json:"no_passpor" form:"no_passpor" binding:"required"`
-	Foto         string `json:"foto" form:"foto"`
+	Id        int    `json:"id" form:"id"`
+	Nama      string `json:"nama" form:"nama"`
+	Username  string `json:"username" form:"username"`
+	Password  string `json:"password" form:"password"`
+	TglLahir  string `json:"tgl_lahir" form:"tgl_lahir"`
+	NoKtp     string `json:"no_ktp" form:"no_ktp" binding:"required"`
+	NoHp      string `json:"no_hp" form:"no_hp" binding:"required"`
+	NoVisa    string `json:"no_visa" form:"no_visa" binding:"required"`
+	NoPasspor string `json:"no_passpor" form:"no_passpor" binding:"required"`
+	//Foto         string `json:"foto" form:"foto"`
 	IdPrivileges int    `json:"id_privileges" form:"-" binding:"-"`
 	CreatedAt    string `json:"created_at" form:"created_at"`
 }

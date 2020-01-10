@@ -36,7 +36,8 @@ func GetSosPetugas(petugasSos structs.GetSosPetugas) ([]structs.GetSosPetugas, e
 	var data []structs.GetSosPetugas
 	gets := idb.DB.Table("notif_petugas").Select("notif_petugas.id, notif_petugas.id_sos_jamaah, " +
 		"notif_petugas.id_users_penerima, petugas.nama AS nama_petugas, sos_jamaah.sos, sos_jamaah.id_users_sender, " +
-		"user_sender.nama AS nama_pengirim, sos_jamaah.lat, sos_jamaah.lng, sos_jamaah.created_at").
+		"user_sender.nama AS nama_pengirim, sos_jamaah.lat, sos_jamaah.lng, " +
+		"date_format(sos_jamaah.created_at, '%m-%a-%Y %H:%i') as created_at").
 		Joins("JOIN sos_jamaah ON notif_petugas.id_sos_jamaah = sos_jamaah.id").
 		Joins("JOIN users AS petugas ON notif_petugas.id_users_penerima = petugas.id").
 		Joins("JOIN users AS user_sender ON sos_jamaah.id_users_sender = user_sender.id").
@@ -57,7 +58,8 @@ func GetSosAdmin(adminsos structs.GetSosAdmin) ([]structs.GetSosAdmin, error) {
 	var data []structs.GetSosAdmin
 	get := idb.DB.Table("notif_admin").Select("notif_admin.id, notif_admin.id_sos_sender, " +
 		"notif_admin.id_users_admin, admin.nama as nama_admin, sos_jamaah.sos, sos_jamaah.id_users_sender, " +
-		"user_table.nama as nama_user, sos_jamaah.lat, sos_jamaah.lng, sos_jamaah.created_at").
+		"user_table.nama as nama_user, sos_jamaah.lat, sos_jamaah.lng, " +
+		"date_format(sos_jamaah.created_at, '%m-%a-%Y %H:%i') as created_at").
 		Joins("JOIN users AS admin ON notif_admin.id_users_admin = admin.id").
 		Joins("JOIN sos_jamaah ON notif_admin.id_sos_sender = sos_jamaah.id").
 		Joins("JOIN users AS user_table ON sos_jamaah.id_users_sender = user_table.id").
@@ -70,5 +72,44 @@ func GetSosAdmin(adminsos structs.GetSosAdmin) ([]structs.GetSosAdmin, error) {
 	}
 	err := get.Find(&data).Error
 	fmt.Println("get notif", data)
+	return data, err
+}
+
+func DetailSosPetugas(detail structs.DetailSosPetugas) (structs.DetailSosPetugas, error) {
+	var data structs.DetailSosPetugas
+	get := idb.DB.Table("notif_petugas").Select("notif_petugas.id, notif_petugas.id_sos_jamaah, " +
+		"notif_petugas.id_users_penerima, petugas.nama AS nama_petugas, sos_jamaah.sos, sos_jamaah.id_users_sender," +
+		" user_sender.nama AS nama_pengirim, sos_jamaah.lat, sos_jamaah.lng, user_sender.no_ktp, user_sender.no_hp, " +
+		"user_sender.no_visa, user_sender.no_passpor, user_sender.foto, user_sender.id_privileges, tb_privileges.role," +
+		"date_format(sos_jamaah.created_at, '%m-%a-%Y %H:%i') as created_at ").
+		Joins("JOIN sos_jamaah ON notif_petugas.id_sos_jamaah = sos_jamaah.id").
+		Joins("JOIN users AS petugas ON notif_petugas.id_users_penerima = petugas.id").
+		Joins("JOIN users AS user_sender ON sos_jamaah.id_users_sender = user_sender.id").
+		Joins("JOIN tb_privileges ON user_sender.id_privileges = tb_privileges.id")
+
+	if detail.Id != nil {
+		get = get.Where("notif_petugas.id in (?)", int(*detail.Id))
+	}
+	err := get.Find(&data).Error
+	fmt.Println("get detail => ", data)
+	return data, err
+}
+
+func DetailSosAdmin(detail structs.DetailSosAdmin) (structs.DetailSosAdmin, error) {
+	var data structs.DetailSosAdmin
+	get := idb.DB.Table("notif_admin").Select("notif_admin.id, notif_admin.id_sos_sender, " +
+		"notif_admin.id_users_admin, admin.nama as nama_admin, sos_jamaah.sos, sos_jamaah.id_users_sender, " +
+		"user_table.nama as nama_user, sos_jamaah.lat, sos_jamaah.lng, user_table.no_ktp, user_table.no_hp, " +
+		"user_table.no_visa, user_table.no_passpor, user_table.foto, user_table.id_privileges, tb_privileges.role, " +
+		"date_format(sos_jamaah.created_at, '%m-%a-%Y %H:%i') as created_at").
+		Joins("JOIN users AS admin ON notif_admin.id_users_admin = admin.id").
+		Joins("JOIN sos_jamaah ON notif_admin.id_sos_sender = sos_jamaah.id").
+		Joins("JOIN users AS user_table ON sos_jamaah.id_users_sender = user_table.id").
+		Joins("JOIN tb_privileges ON user_table.id_privileges = tb_privileges.id")
+	if detail.Id != nil {
+		get = get.Where("notif_admin.id in (?)", int(*detail.Id))
+	}
+	err := get.Find(&data).Error
+	fmt.Println("get detail => ", data)
 	return data, err
 }
