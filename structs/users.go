@@ -24,15 +24,15 @@ type UploadFoto struct {
 }
 
 type GetUser struct {
-	Id           *int    `json:"id" form:"id"`
-	Nama         *string `json:"nama" form:"nama"`
-	Username     *string `json:"username" form:"username"`
-	TglLahir     *string `json:"tgl_lahir" form:"tgl_lahir"`
-	NoKtp        *int    `json:"no_ktp" form:"no_ktp"`
-	NoHp         *int    `json:"no_hp" form:"no_hp"`
-	NoVisa       *string `json:"no_visa" form:"no_visa"`
-	NoPasspor    *string `json:"no_passpor" form:"no_passpor"`
-	Foto         *string `json:"foto" form:"foto"`
+	Id        *int    `json:"id" form:"id"`
+	Nama      *string `json:"nama" form:"nama"`
+	Username  *string `json:"username" form:"username"`
+	TglLahir  *string `json:"tgl_lahir" form:"tgl_lahir"`
+	NoKtp     *int    `json:"no_ktp" form:"no_ktp"`
+	NoHp      *int    `json:"no_hp" form:"no_hp"`
+	NoVisa    *string `json:"no_visa" form:"no_visa"`
+	NoPasspor *string `json:"no_passpor" form:"no_passpor"`
+	//Foto         *string `json:"foto" form:"foto"`
 	IdPrivileges *int    `json:"id_privileges" form:"id_privileges" binding:"required"`
 	Role         *string `json:"role" form:"role"`
 	CreatedAt    *string `json:"created_at" form:"created_at"`
@@ -54,15 +54,15 @@ type SearchUser struct {
 }
 
 type GetUserLogin struct {
-	Id           int     `json:"id"`
-	Nama         *string `json:"nama"`
-	Username     *string `json:"username"`
-	TglLahir     *string `json:"tgl_lahir"`
-	NoKtp        *int    `json:"no_ktp"`
-	NoHp         *int    `json:"no_hp"`
-	NoVisa       *string `json:"no_visa"`
-	NoPasspor    *string `json:"no_passpor"`
-	Foto         *string `json:"foto"`
+	Id        int     `json:"id"`
+	Nama      *string `json:"nama"`
+	Username  *string `json:"username"`
+	TglLahir  *string `json:"tgl_lahir"`
+	NoKtp     *string `json:"no_ktp"`
+	NoHp      *string `json:"no_hp"`
+	NoVisa    *string `json:"no_visa"`
+	NoPasspor *string `json:"no_passpor"`
+	//Foto         *string `json:"foto"`
 	IdPrivileges *int    `json:"id_privileges"`
 	Role         *string `json:"role"`
 	CreatedAt    *string `json:"created_at"`

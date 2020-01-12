@@ -40,13 +40,13 @@ func main() {
 		v1.PUT("/rekom_update", controllers.UpdateRekom)
 		v1.GET("/privileges_role", controllers.GetRole)
 		v1.GET("/privileges_type", controllers.GetType)
-		v1.POST("/sos/post", controllers.CreateSos)
-		v1.GET("/sos/petugas", controllers.GetSosPetugas)
-		v1.GET("/sos/petugas/detail", controllers.DetailSosPetugas)
-		v1.GET("/sos/admin", controllers.GetSosadmin)
-		v1.GET("/sos/admin/detail", controllers.DetailSosAdmin)
+		v1.POST("/sos", controllers.CreateSos)
+		v1.GET("/sos/list", controllers.GetSosPetugas)
+		v1.GET("/sos/detail", controllers.DetailSosPetugas)
+		//v1.GET("/sos/admin", controllers.GetSosadmin)
+		//v1.GET("/sos/admin/detail", controllers.DetailSosAdmin)
 
 		v1.GET("/get_users", controllers.GetUsersNew)
 	}
-	router.Run(":8080")
+	router.Run(":4005")
 }

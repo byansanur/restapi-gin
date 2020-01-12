@@ -89,13 +89,13 @@ func GetRekomends(nama string, alamat string, foto string, rating string, lat st
 		err = err.Offset(offset)
 	}
 	if nama != "" {
-		err = err.Where("rekomendasi.nama = ?", nama)
+		err = err.Where("rekomendasi.nama like ?", "%"+nama+"%")
 	}
 	if alamat != "" {
-		err = err.Where("rekomendasi.alamat = ?", alamat)
+		err = err.Where("rekomendasi.alamat like ?", "%"+alamat+"%")
 	}
 	if rating != "" {
-		err = err.Where("rekomendasi.rating = ?", rating)
+		err = err.Where("rekomendasi.rating like ?", "%"+rating+"%")
 	}
 	if lat != "" {
 		err = err.Where("rekomendasi.lat")
@@ -110,7 +110,7 @@ func GetRekomends(nama string, alamat string, foto string, rating string, lat st
 		err = err.Where("rekomendasi.foto = ?", foto)
 	}
 
-	err = err.Order("rekomendasi.rating desc")
+	//err = err.Order("rekomendasi.rating desc")
 
 	err = err.Find(&getRekom)
 	errx := err.Error
@@ -169,7 +169,8 @@ func GetRekomendsDetail(id string) structs.JsonResponse {
 	return response
 }
 
-func UpdateRekomendasi(id string, nama string, alamat string, files multipart.File, header *multipart.FileHeader, rating string) structs.JsonResponse {
+func UpdateRekomendasi(id string, nama string, alamat string,
+	files multipart.File, header *multipart.FileHeader, rating string, lat string, lng string) structs.JsonResponse {
 	var (
 		updateRekom structs.UpdateRekomendasi
 		t           structs.Component
@@ -182,11 +183,13 @@ func UpdateRekomendasi(id string, nama string, alamat string, files multipart.Fi
 
 	updateRekom.Id = id_conv
 	updateRekom.Nama = nama
-	updateRekom.Alaamat = alamat
+	updateRekom.Alamat = alamat
 	updateRekom.Foto = url
 	updateRekom.Rating = rating
+	updateRekom.Lat = lat
+	updateRekom.Lng = lng
 
-	err := idb.DB.Table("users").Where("rekomendasi.id = ?", id_conv).Update(&updateRekom)
+	err := idb.DB.Table("rekomendasi").Where("rekomendasi.id = ?", id_conv).Update(&updateRekom)
 	errx := err.Error
 
 	if errx != nil {

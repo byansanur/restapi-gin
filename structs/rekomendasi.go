@@ -30,11 +30,13 @@ type RekomFoto struct {
 }
 
 type UpdateRekomendasi struct {
-	Id      int    `json:"id"`
-	Nama    string `json:"nama"`
-	Alaamat string `json:"alaamat"`
-	Foto    string `json:"foto"`
-	Rating  string `json:"rating"`
+	Id     int    `json:"id"`
+	Nama   string `json:"nama"`
+	Alamat string `json:"alamat"`
+	Foto   string `json:"foto"`
+	Rating string `json:"rating"`
+	Lat    string `json:"lat"`
+	Lng    string `json:"lng"`
 }
 
 type CheckIdRekom struct {

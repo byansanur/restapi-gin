@@ -149,8 +149,7 @@ func LoginAdmin(username string, password string) structs.JsonResponse {
 					"users.id_privileges, tb_privileges.role, users.created_at")
 				err = err.Joins("join tb_privileges on users.id_privileges = tb_privileges.id")
 				err = err.Where("users.id = ?", userlogin.Id)
-				err = err.Where("users.id_privileges != 2")
-				err = err.Where("users.id_privileges != 3")
+				err = err.Where("users.id_privileges = 1")
 				err = err.First(&users)
 				errx := err.Error
 
@@ -214,8 +213,7 @@ func LoginPetugas(username string, password string) structs.JsonResponse {
 					"tb_privileges.role, users.created_at")
 				err = err.Joins("join tb_privileges on users.id_privileges = tb_privileges.id")
 				err = err.Where("users.id = ?", userlogin.Id)
-				err = err.Where("users.id_privileges != 1")
-				err = err.Where("users.id_privileges != 3")
+				err = err.Where("users.id_privileges = 2")
 				err = err.First(&users)
 				errx := err.Error
 
@@ -255,6 +253,7 @@ func LoginUsers(username string, password string) structs.JsonResponse {
 
 	cekUsername := idb.DB.Table("users").Select("id,username,password")
 	cekUsername = cekUsername.Where("users.username = ?", username)
+	cekUsername = cekUsername.Where("users.id_privileges = 3")
 
 	cekUsername = cekUsername.Scan(&userlogin)
 	cekUsernames := cekUsername.RecordNotFound()
@@ -279,8 +278,6 @@ func LoginUsers(username string, password string) structs.JsonResponse {
 					"users.foto, users.id_privileges, tb_privileges.role, users.created_at")
 				err = err.Joins("join tb_privileges on users.id_privileges = tb_privileges.id")
 				err = err.Where("users.id = ?", userlogin.Id)
-				err = err.Where("users.id_privileges != 1")
-				err = err.Where("users.id_privileges != 2")
 				err = err.First(&users)
 				errx := err.Error
 
@@ -289,7 +286,7 @@ func LoginUsers(username string, password string) structs.JsonResponse {
 
 				claim["authorized"] = true
 				claim["client"] = users.Id
-				claim["exp"] = time.Now().Add(time.Minute * 360).Unix()
+				claim["exp"] = time.Now().Add(time.Hour * 24).Unix()
 
 				token, _ := sign.SignedString(config_db.JwtKey())
 				users.Token = token

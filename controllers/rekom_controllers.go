@@ -120,13 +120,15 @@ func UpdateRekom(c *gin.Context) {
 	alamat := c.PostForm("alamat")
 	foto, header, _ := c.Request.FormFile("foto")
 	rating := c.PostForm("rating")
+	lat := c.PostForm("lat")
+	lng := c.PostForm("lng")
 
 	responses := structs.JsonResponse{}
 
 	if id == "" {
 		responses.ApiMessage = "Required Id"
 	} else {
-		responses = models.UpdateRekomendasi(id, nama, alamat, foto, header, rating)
+		responses = models.UpdateRekomendasi(id, nama, alamat, foto, header, rating, lat, lng)
 	}
 	if responses.ApiStatus == 1 {
 
