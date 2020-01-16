@@ -52,6 +52,9 @@ func GetSosPetugas(c *gin.Context) {
 
 	response := structs.JsonResponse{}
 
+	limit := c.Query("limit")
+	offset := c.Query("offset")
+
 	err := c.BindQuery(&getsos)
 	if err != nil {
 		var m string
@@ -61,7 +64,7 @@ func GetSosPetugas(c *gin.Context) {
 		response.ApiMessage = "validation " + m
 		c.JSON(400, response)
 	} else {
-		data, errx := models.GetSosPetugas(getsos)
+		data, errx := models.GetSosPetugas(getsos, limit, offset)
 		response.Data = data
 		if errx != nil {
 			response.ApiMessage = t.GetMessageErr()

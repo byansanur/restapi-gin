@@ -27,7 +27,7 @@ func CreatedSos(sos structs.CreateSos, notif structs.CreateSosNotif) (structs.Cr
 	return sos, err
 }
 
-func GetSosPetugas(petugasSos structs.GetSosPetugas) ([]structs.GetSosPetugas, error) {
+func GetSosPetugas(petugasSos structs.GetSosPetugas, limit string, offset string) ([]structs.GetSosPetugas, error) {
 	var data []structs.GetSosPetugas
 	gets := idb.DB.Table("notif").Select("notif.id, notif.id_sos_jamaah, sos_jamaah.message, " +
 		"sos_jamaah.id_users_sender, users.nama, sos_jamaah.lat, sos_jamaah.lng, " +
@@ -35,6 +35,13 @@ func GetSosPetugas(petugasSos structs.GetSosPetugas) ([]structs.GetSosPetugas, e
 		Joins("JOIN sos_jamaah ON notif.id_sos_jamaah = sos_jamaah.id").
 		Joins("JOIN users ON sos_jamaah.id_users_sender = users.id").
 		Order("sos_jamaah.created_at desc")
+
+	if limit != "" {
+		gets = gets.Limit(limit)
+	}
+	if offset != "" {
+		gets = gets.Offset(offset)
+	}
 
 	if petugasSos.Id != nil {
 		gets = gets.Where("notif.id in (?)", int(*petugasSos.Id))
@@ -49,28 +56,6 @@ func GetSosPetugas(petugasSos structs.GetSosPetugas) ([]structs.GetSosPetugas, e
 	fmt.Println("get notif", data)
 	return data, err
 }
-
-//
-//func GetSosAdmin(adminsos structs.GetSosAdmin) ([]structs.GetSosAdmin, error) {
-//	var data []structs.GetSosAdmin
-//	get := idb.DB.Table("notif_admin").Select("notif_admin.id, notif_admin.id_sos_sender, " +
-//		"notif_admin.id_users_admin, admin.nama as nama_admin, sos_jamaah.sos, sos_jamaah.id_users_sender, " +
-//		"user_table.nama as nama_user, sos_jamaah.lat, sos_jamaah.lng, " +
-//		"date_format(sos_jamaah.created_at, '%m-%a-%Y %H:%i') as created_at").
-//		Joins("JOIN users AS admin ON notif_admin.id_users_admin = admin.id").
-//		Joins("JOIN sos_jamaah ON notif_admin.id_sos_sender = sos_jamaah.id").
-//		Joins("JOIN users AS user_table ON sos_jamaah.id_users_sender = user_table.id").
-//		Order("sos_jamaah.created_at desc")
-//	if adminsos.Id != nil {
-//		get = get.Where("notif_admin.id in (?)", int(*adminsos.Id))
-//	}
-//	if adminsos.NamaUser != nil {
-//		get = get.Where("sos_jamaah.nama  LIKE ?", "%"+string(*adminsos.NamaUser)+"%")
-//	}
-//	err := get.Find(&data).Error
-//	fmt.Println("get notif", data)
-//	return data, err
-//}
 
 func DetailSosPetugas(detail structs.DetailSosPetugas) (structs.DetailSosPetugas, error) {
 	var data structs.DetailSosPetugas
