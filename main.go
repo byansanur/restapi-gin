@@ -50,5 +50,7 @@ func main() {
 
 		v1.GET("/get_users", controllers.GetUsersNew)
 	}
-	router.Run(":4001")
+	router.Run(":4003") // admin accses
+	//router.Run(":4002") // petugas accses
+	//router.Run(":4001") // users accses
 }
