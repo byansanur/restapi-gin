@@ -69,11 +69,11 @@ func DetailSosPetugas(detail structs.DetailSosPetugas) (structs.DetailSosPetugas
 		Joins("JOIN tb_privileges ON users.id_privileges = tb_privileges.id")
 
 	if detail.Id != nil {
-		get = get.Where("notif.id in (?)", int(*detail.Id))
+		get = get.Where("notif.id in (?)", detail.Id)
 	}
-	if detail.IdUsersSender != nil {
-		get = get.Where("sos_jamaah.id_users_sender in (?)", int(*detail.IdUsersSender))
-	}
+	//if detail.IdUsersSender != nil {
+	//	get = get.Where("sos_jamaah.id_users_sender in (?)", int(*detail.IdUsersSender))
+	//}
 	err := get.Find(&data).Error
 	fmt.Println("get detail => ", data)
 	return data, err

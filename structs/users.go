@@ -28,8 +28,8 @@ type GetUser struct {
 	Nama      *string `json:"nama" form:"nama"`
 	Username  *string `json:"username" form:"username"`
 	TglLahir  *string `json:"tgl_lahir" form:"tgl_lahir"`
-	NoKtp     *int    `json:"no_ktp" form:"no_ktp"`
-	NoHp      *int    `json:"no_hp" form:"no_hp"`
+	NoKtp     *string `json:"no_ktp" form:"no_ktp"`
+	NoHp      *string `json:"no_hp" form:"no_hp"`
 	NoVisa    *string `json:"no_visa" form:"no_visa"`
 	NoPasspor *string `json:"no_passpor" form:"no_passpor"`
 	//Foto         *string `json:"foto" form:"foto"`
@@ -95,4 +95,19 @@ type UpdateUsers struct {
 	NoVisa    string `json:"no_visa"`
 	NoPasspor string `json:"no_passpor"`
 	Foto      string `json:"foto"`
+}
+
+type UpdateLocationUsers struct {
+	Id  int    `json:"id"`
+	Lat string `json:"lat"`
+	Lng string `json:"lng"`
+}
+
+type GetLocationUsers struct {
+	Id           int    `json:"id"`
+	Nama         string `json:"nama"`
+	Lat          string `json:"lat"`
+	Lng          string `json:"lng"`
+	IdPrivileges *int   `json:"id_privileges" form:"id_privileges" binding:"required"`
+	Role         string `json:"role"`
 }

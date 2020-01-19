@@ -49,8 +49,8 @@ type DetailSosPetugas struct {
 	Nama          *string `json:"nama" form:"nama"`
 	Lat           *string `json:"lat" form:"lat"`
 	Lng           *string `json:"lng" form:"lng"`
-	NoKtp         *int    `json:"no_ktp" form:"no_ktp"`
-	NoHp          *int    `json:"no_hp" form:"no_hp"`
+	NoKtp         *string `json:"no_ktp" form:"no_ktp"`
+	NoHp          *string `json:"no_hp" form:"no_hp"`
 	NoVisa        *string `json:"no_visa" form:"no_visa"`
 	NoPasspor     *string `json:"no_passpor" form:"no_passpor"`
 	Role          *string `json:"role" form:"role"`

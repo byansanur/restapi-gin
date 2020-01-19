@@ -161,6 +161,88 @@ func LoginUsers(c *gin.Context) {
 	}
 }
 
+func FetchUsers(c *gin.Context) {
+	users := structs.GetUser{}
+	t := structs.Component{}
+
+	response := structs.JsonResponse{}
+	err := c.BindQuery(&users)
+	if err != nil {
+		var m string
+		if err != nil {
+			m = m + err.Error()
+		}
+		response.ApiMessage = "validation " + m
+		c.JSON(400, response)
+	} else {
+		data, errs := models.FetchUsersProfile(users)
+		response.Data = data
+		if errs != nil {
+			response.ApiMessage = t.GetMessageErr()
+			c.JSON(400, response)
+		} else {
+			response.ApiStatus = 1
+			response.ApiMessage = t.GetMessageSucc()
+			c.JSON(200, response)
+		}
+	}
+}
+
+func FetchAllUsers(c *gin.Context) {
+	users := structs.GetUser{}
+	t := structs.Component{}
+	limit := c.Query("limit")
+	offset := c.Query("offset")
+
+	response := structs.JsonResponse{}
+	err := c.BindQuery(&users)
+	if err != nil {
+		var m string
+		if err != nil {
+			m = m + err.Error()
+		}
+		response.ApiMessage = "validation " + m
+		c.JSON(400, response)
+	} else {
+		data, errs := models.FetchAllUsers(users, limit, offset)
+		response.Data = data
+		if errs != nil {
+			response.ApiMessage = t.GetMessageErr()
+			c.JSON(400, response)
+		} else {
+			response.ApiStatus = 1
+			response.ApiMessage = t.GetMessageSucc()
+			c.JSON(200, response)
+		}
+	}
+}
+
+func FetchLocationUsers(c *gin.Context) {
+	userLoc := structs.GetLocationUsers{}
+	t := structs.Component{}
+
+	response := structs.JsonResponse{}
+	err := c.BindQuery(&userLoc)
+	if err != nil {
+		var m string
+		if err != nil {
+			m = m + err.Error()
+		}
+		response.ApiMessage = "validation " + m
+		c.JSON(400, response)
+	} else {
+		data, errs := models.GetLocationUsers(userLoc)
+		response.Data = data
+		if errs != nil {
+			response.ApiMessage = t.GetMessageErr()
+			c.JSON(400, response)
+		} else {
+			response.ApiStatus = 1
+			response.ApiMessage = t.GetMessageSucc()
+			c.JSON(200, response)
+		}
+	}
+}
 func GetJamaah(c *gin.Context) {
 	created_at := c.Query("created_at")
 	nama := c.Query("nama")
@@ -316,6 +398,30 @@ func UpdateUser(c *gin.Context) {
 	} else {
 
 		responses = models.UpdateUser(id, nama, username, password, no_hp, no_visa, no_passpor, foto, header)
+	}
+
+	if responses.ApiStatus == 1 {
+
+		c.JSON(http.StatusOK, responses)
+	} else {
+		c.JSON(500, responses)
+	}
+
+}
+
+func UpdateLocUser(c *gin.Context) {
+
+	id := c.PostForm("id")
+	lat := c.PostForm("lat")
+	lng := c.PostForm("lng")
+
+	responses := structs.JsonResponse{}
+
+	if id == "" {
+		responses.ApiMessage = "Required Id"
+	} else {
+
+		responses = models.UpdateLocationUsers(id, lat, lng)
 	}
 
 	if responses.ApiStatus == 1 {

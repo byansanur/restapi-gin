@@ -582,6 +582,45 @@ func GetUsers(nama string, username string, tgl_lahir string, no_ktp string,
 	return response
 }
 
+func FetchUsersProfile(users structs.GetUser) (structs.GetUser, error) {
+	data := structs.GetUser{}
+	get := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, " +
+		"users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
+		"users.created_at," + "tb_privileges.role").
+		Joins("JOIN tb_privileges ON users.id_privileges = tb_privileges.id")
+
+	if users.Id != nil {
+		get = get.Where("users.id = ?", users.Id)
+	}
+	if users.IdPrivileges != nil {
+		get = get.Where("users.id_privileges = ?", users.IdPrivileges)
+	}
+	err := get.Find(&data).Error
+	fmt.Println("getUser", data)
+	return data, err
+}
+
+func FetchAllUsers(usersAll structs.GetUser, limit string, offset string) ([]structs.GetUser, error) {
+	var data []structs.GetUser
+	get := idb.DB.Table("users").Select("users.id, users.nama, users.username, users.tgl_lahir, " +
+		"users.no_ktp, users.no_hp, users.no_visa, users.no_passpor, users.foto, users.id_privileges, " +
+		"users.created_at," + "tb_privileges.role").
+		Joins("JOIN tb_privileges ON users.id_privileges = tb_privileges.id")
+
+	if usersAll.IdPrivileges != nil {
+		get = get.Where("users.id_privileges = ?", usersAll.IdPrivileges)
+	}
+	if limit != "" {
+		get = get.Limit(limit)
+	}
+	if offset != "" {
+		get = get.Offset(offset)
+	}
+	err := get.Find(&data).Error
+	fmt.Println("all users", data)
+	return data, err
+}
+
 func GetUserDetail(id string) structs.JsonResponse {
 
 	var (
@@ -647,4 +686,43 @@ func UpdateUser(id string, nama string, username string, password string,
 		response.Data = userUpdate
 	}
 	return response
+}
+
+func UpdateLocationUsers(id string, lat string, lng string) structs.JsonResponse {
+	var (
+		locUpdate structs.UpdateLocationUsers
+		t         structs.Component
+	)
+	response := structs.JsonResponse{}
+	id_conv, _ := strconv.Atoi(id)
+	locUpdate.Id = id_conv
+	locUpdate.Lat = lat
+	locUpdate.Lng = lng
+	err := idb.DB.Table("users").Where("users.id = ?", id_conv).Update(&locUpdate)
+	err2 := err.Error
+	if err2 != nil {
+		response.ApiStatus = 0
+		response.ApiMessage = err2.Error()
+		response.Data = nil
+	} else {
+		response.ApiStatus = 1
+		response.ApiMessage = t.GetMessageSucc()
+		response.Data = locUpdate
+	}
+	return response
+}
+
+func GetLocationUsers(loc structs.GetLocationUsers) ([]structs.GetLocationUsers, error) {
+	var data []structs.GetLocationUsers
+	get := idb.DB.Table("users").
+		Select("users.id, users.nama, users.lat, users.lng, users.id_privileges, tb_privileges.role").
+		Joins("Join tb_privileges on users.id_privileges = tb_privileges.id")
+
+	if loc.IdPrivileges != nil {
+		get = get.Where("users.id_privileges = ?", loc.IdPrivileges)
+	}
+
+	err := get.Find(&data).Error
+	fmt.Println("loc users", data)
+	return data, err
 }

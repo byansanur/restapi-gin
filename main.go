@@ -29,6 +29,9 @@ func main() {
 		v1.GET("/search-users", controllers.SearchUser)
 		v1.GET("/foto", controllers.GetFoto)
 		v1.GET("/akun", controllers.GetUsers)
+		v1.GET("/fetch_users", controllers.FetchUsers)
+		v1.GET("/fetch_users/list", controllers.FetchAllUsers)
+		v1.GET("/location/users", controllers.FetchLocationUsers)
 		v1.GET("/akun_list_jamaah", controllers.GetJamaah)
 		v1.GET("/akun_list_petugas", controllers.GetPetugas)
 		v1.GET("/akun_detail", controllers.GetUserDetail)
@@ -43,8 +46,7 @@ func main() {
 		v1.POST("/sos", controllers.CreateSos)
 		v1.GET("/sos/list", controllers.GetSosPetugas)
 		v1.GET("/sos/detail", controllers.DetailSosPetugas)
-		//v1.GET("/sos/admin", controllers.GetSosadmin)
-		//v1.GET("/sos/admin/detail", controllers.DetailSosAdmin)
+		v1.PUT("/update_location", controllers.UpdateLocUser)
 
 		v1.GET("/get_users", controllers.GetUsersNew)
 	}
