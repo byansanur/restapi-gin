@@ -10,7 +10,7 @@ import (
 func CreateRekomendasi(c *gin.Context) {
 	nama := c.PostForm("nama")
 	alamat := c.PostForm("alamat")
-	foto, header, _ := c.Request.FormFile("foto")
+	//foto, header, _ := c.Request.FormFile("foto")
 	lat := c.PostForm("lat")
 	lng := c.PostForm("lng")
 	rating := c.PostForm("rating")
@@ -32,7 +32,7 @@ func CreateRekomendasi(c *gin.Context) {
 		response.ApiMessage = "type isi"
 	}
 
-	response = models.CreateRekomendasi(nama, alamat, foto, header, lat, lng, rating, id_type)
+	response = models.CreateRekomendasi(nama, alamat, lat, lng, rating, id_type)
 
 	if response.ApiStatus == 1 {
 

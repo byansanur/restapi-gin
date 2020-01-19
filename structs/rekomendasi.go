@@ -1,10 +1,10 @@
 package structs
 
 type CreateRekomendasi struct {
-	Id        int    `json:"id"`
-	Nama      string `json:"nama"`
-	Alamat    string `json:"alamat"`
-	Foto      string `json:"foto"`
+	Id     int    `json:"id"`
+	Nama   string `json:"nama"`
+	Alamat string `json:"alamat"`
+	//Foto      string `json:"foto"`
 	Lat       string `json:"lat"`
 	Lng       string `json:"lng"`
 	Rating    string `json:"rating"`

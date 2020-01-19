@@ -7,8 +7,7 @@ import (
 	"strconv"
 )
 
-func CreateRekomendasi(nama string, alamat string, files multipart.File,
-	header *multipart.FileHeader, lat string, lng string, rating string, id_type string) structs.JsonResponse {
+func CreateRekomendasi(nama string, alamat string, lat string, lng string, rating string, id_type string) structs.JsonResponse {
 
 	var (
 		rekomCreate structs.CreateRekomendasi
@@ -30,34 +29,34 @@ func CreateRekomendasi(nama string, alamat string, files multipart.File,
 		if cekIdRekom.CountId == 0 {
 			id_type_conv, _ := strconv.Atoi(id_type)
 
-			url := UploadImage("rekom", fmt.Sprint(nama), files, header)
+			//url := UploadImage("rekom", fmt.Sprint(nama), files, header)
 
-			if url != "" {
-				fmt.Println("foto tidak kosong")
+			//if url != "" {
+			fmt.Println("foto tidak kosong")
 
-				rekomCreate.Nama = nama
-				rekomCreate.Alamat = alamat
-				rekomCreate.Foto = url
-				rekomCreate.Lat = lat
-				rekomCreate.Lng = lng
-				rekomCreate.Rating = rating
-				rekomCreate.IdType = id_type_conv
-				rekomCreate.CreatedAt = t.GetTimeNow()
+			rekomCreate.Nama = nama
+			rekomCreate.Alamat = alamat
+			//rekomCreate.Foto = url
+			rekomCreate.Lat = lat
+			rekomCreate.Lng = lng
+			rekomCreate.Rating = rating
+			rekomCreate.IdType = id_type_conv
+			rekomCreate.CreatedAt = t.GetTimeNow()
 
-				err := idb.DB.Table("rekomendasi").Create(&rekomCreate)
+			err := idb.DB.Table("rekomendasi").Create(&rekomCreate)
 
-				errx := err.Error
+			errx := err.Error
 
-				if errx != nil {
-					fmt.Println("gagal buat rekomendasi")
-					response.ApiMessage = t.GetMessageErr()
-				} else {
-					// jika berhasil buat akun atau insert ke db maka responsenya disini
-					response.ApiStatus = 1
-					response.ApiMessage = t.GetMessageSucc()
-					response.Data = rekomCreate
-				}
+			if errx != nil {
+				fmt.Println("gagal buat rekomendasi")
+				response.ApiMessage = t.GetMessageErr()
+			} else {
+				// jika berhasil buat akun atau insert ke db maka responsenya disini
+				response.ApiStatus = 1
+				response.ApiMessage = t.GetMessageSucc()
+				response.Data = rekomCreate
 			}
+			//}
 		} else {
 			// jika user mendaftar dengan username yang sama maka akan response disini
 			response.ApiMessage = "Nama is Already Used"

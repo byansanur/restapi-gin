@@ -33,7 +33,7 @@ type GetUser struct {
 	NoVisa    *string `json:"no_visa" form:"no_visa"`
 	NoPasspor *string `json:"no_passpor" form:"no_passpor"`
 	//Foto         *string `json:"foto" form:"foto"`
-	IdPrivileges *int    `json:"id_privileges" form:"id_privileges" binding:"required"`
+	IdPrivileges *int    `json:"id_privileges" form:"id_privileges" binding:"-"`
 	Role         *string `json:"role" form:"role"`
 	CreatedAt    *string `json:"created_at" form:"created_at"`
 }
