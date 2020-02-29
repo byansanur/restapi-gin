@@ -8,6 +8,7 @@ and i use mysql databases
 clone this repo and import .sql on your local computer
 e.g phpmyadmin, mariaDB, etc...
 
-serve in port :5000
+serve in port router
 
-consuming for repository https://github.com/byansanur/android-first.git
+# Projects
+Skripsi tugas akhir.
